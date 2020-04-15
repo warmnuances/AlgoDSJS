@@ -52,43 +52,119 @@ class BST {
   }
 
   /** Traverse to the left till its null**/
-  findMin(){
-    let cursor = this.root;
-    while(cursor.left !== null) {
-      cursor = cursor.left;
+  findMin(node){
+    node = node || this.root
+    while(node.left !== null) {
+      node = node.left;
     }
-    return cursor.data;
+    return node;
   }
 
   /** Traverse to the right till its null**/
-  findMax(){
-    let cursor = this.root;
-    while(cursor.right !== null) {
-      cursor = cursor.right;
-    }
-    return cursor.data;
-  }
-
-  find(data){
-    let node = this.root;
-    if(data > node){
+  findMax(node){
+    node = node || this.root
+    while(node.right !== null) {
       node = node.right;
     }
-    else if(data < node){
-      node = node.left
-    }
-    else{
-      return null;
-    }
-    
+    return node;
   }
 
+  /** Return Current Node that matches data **/
+  find(data,node){
+    node = node || this.root;
+    while(node.data !== data){
+      
+      if(data > node.data){
+        node = node.right
+      }
+      else if(data < node.data){
+        node = node.left
+      }
+      
+      if(node === null) return null;
+    }
+    return node
+
+  }
+  remove(data,node){
+    // let node = this.root;
+    node = node || this.root
+
+
+    if(node === null) return;
+
+    if(data < node.data){
+      this.remove(data,node.left);
+    }
+    else if(data > node.data){
+      this.remove(data,node.right);
+    }
+    else{
+      // Node to Delete has been found
+      //Case 0: no children ->
+      if(node.left === null && node.right === null){
+          node = null;
+          return;
+      }
+      //Case 1: 1 Children
+      // Delete current node and replace with the 1 child
+      else if(node.left === null && node.right !== null){
+        let temp = node;
+        node = node.right;
+        temp = null;
+        return node;
+      }
+      else if(node.right === null && node.left !== null){
+        let temp = node;
+        node = node.left;
+        temp = null;
+        return node;
+      }
+      //Case 2: 2 children
+      // Find a Node with no children and replace
+      // Replace with Min in right or Max in left
+      else{
+        //Max in left
+        let temp = this.findMax(node.left);
+        node.data = temp.data
+        return node;
+      }
+    }
+  }
+  findMinHeight(node) {
+    /** If node is not specified = node is undefined **/
+    node === undefined? node = this.root: node = node;
+
+    if (node == null) {
+        return 0;
+    };
+    let left = this.findMinHeight(node.left);
+    let right = this.findMinHeight(node.right);
+  
+    return (left < right)? left+1: right+1  
+  }
+
+  findMaxHeight(node){
+    /** If node is not specified = node is undefined **/
+    node === undefined? node = this.root : node = node;
+    
+    // Reach Max height;
+    if (node == null) {
+        return 0;
+    }
+    else{
+      let left = this.findMaxHeight(node.left);
+      let right = this.findMaxHeight(node.right);
+    
+      return (left < right)? left+1: right+1  
+    }
+
+  }
 }
 
 
 /** Driver Code **/
 const bst = new BST();
-
 
 
 bst.add(9);
@@ -100,8 +176,17 @@ bst.add(22);
 bst.add(5);
 bst.add(7);
 bst.add(20);
+bst.add(24);
+bst.add(21);
+bst.add(19);
+bst.add(18);
+bst.add(23);
 
 console.log("Root ",bst.root);
-console.log("Min: ",bst.findMin());
-console.log("Max:",bst.findMax());
-console.log("Find 7: ",bst.searchTree(7));
+console.log("Min: ",bst.findMin().data);
+console.log("Max:",bst.findMax().data);
+console.log("Find 50(Not in Tree) : ",bst.find(50));
+console.log("Find 22(In Tree): ",bst.find(22));
+bst.remove(22);
+console.log("Remove 22(Not in Tree): ",bst.find(22));
+console.log("Min Height of Tree: ",bst.findMinHeight());
